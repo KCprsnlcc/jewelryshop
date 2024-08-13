@@ -1,0 +1,91 @@
+{% load static %}
+<!-- shop/templates/shop/home.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Online Jewelry Shop</title>
+    <link rel="stylesheet" href="{% static 'shop/styles.css' %}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="container">
+          <div class="navbar-brand">
+            <a href="/">Online Jewelry Shop</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main class="container">
+      <aside class="sidebar">
+        <h2>Categories</h2>
+        <ul>
+          <li>
+            <input
+              type="checkbox"
+              id="cat-necklace"
+              name="categories"
+              value="Necklace"
+            />
+            <label for="cat-necklace">Necklace</label>
+          </li>
+          <li>
+            <input
+              type="checkbox"
+              id="cat-ring"
+              name="categories"
+              value="Ring"
+            />
+            <label for="cat-ring">Ring</label>
+          </li>
+        </ul>
+      </aside>
+      <section class="products-section">
+        <div class="search-bar">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Type your keywords here"
+          />
+          <button type="button" id="search-button">
+            <i class="bx bx-search"></i>
+          </button>
+        </div>
+        <div id="loader" class="loader"></div>
+        <div class="products" id="product-list">
+          {% for product in products %}
+          <div
+            class="product"
+            data-category="{{ product.category }}"
+            data-name="{{ product.name }}"
+          >
+            <a href="{% url 'product_detail' product.id %}">
+              <img src="{% static product.image %}" alt="{{ product.name }}" />
+              <h3>{{ product.name }}</h3>
+              <p>{{ product.description|truncatewords:10 }}</p>
+              <p class="price">PHP {{ product.price|floatformat:2 }}</p>
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+        <!-- Floating Shopping Cart Button -->
+        <div id="floating-cart-button" class="floating-cart">
+          <i class="bx bx-shopping-bag"></i>
+          <span id="cart-count">0</span>
+        </div>
+      </section>
+    </main>
+    <script src="{% static 'shop/scripts.js' %}"></script>
+  </body>
+</html>

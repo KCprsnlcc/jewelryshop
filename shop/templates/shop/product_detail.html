@@ -1,0 +1,128 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ product.name }}</title>
+    <link rel="stylesheet" href="{% static 'shop/styles.css' %}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="container">
+          <div class="navbar-brand">
+            <a href="/">Online Jewelry Shop</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main class="container">
+      <section class="product-detail-section">
+        <div class="product-detail">
+          <img src="{% static product.image %}" alt="{{ product.name }}" />
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.description }}</p>
+          <p class="price">PHP {{ product.price|floatformat:2 }}</p>
+          <button id="add-to-cart-button" class="btn">Add to Cart</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Add to Cart Modal -->
+    <div id="add-to-cart-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="close-add-to-cart">&times;</span>
+        <h2>Add to Cart</h2>
+        <p>Item: {{ product.name }}</p>
+        <p>Price: PHP {{ product.price|floatformat:2 }}</p>
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="cart-quantity" value="1" min="1" />
+        <button id="confirm-add-to-cart" class="btn">Confirm</button>
+      </div>
+    </div>
+
+    <!-- Floating Shopping Cart Button -->
+    <div id="floating-cart-button" class="floating-cart">
+      <i class="bx bx-shopping-bag"></i>
+      <span id="cart-count">0</span>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="close-cart">&times;</span>
+        <h2>Your Cart</h2>
+        <div id="cart-items"></div>
+        <div class="cart-summary">
+          <p>Total: PHP <span id="cart-total">0.00</span></p>
+          <label for="voucher">Voucher:</label>
+          <div class="voucher-container">
+            <input type="text" id="voucher" placeholder="Enter voucher code" />
+            <button id="apply-voucher" class="btn">Apply</button>
+          </div>
+          <p id="discount-message"></p>
+        </div>
+        <div class="cart-checkout">
+          <h3>Checkout</h3>
+          <form class="address-form">
+            <label for="full-name">Full Name</label>
+            <input
+              type="text"
+              id="full-name"
+              placeholder="Enter your full name"
+            />
+            <label for="phone-number">Phone Number</label>
+            <input
+              type="text"
+              id="phone-number"
+              placeholder="Enter your phone number"
+            />
+            <label for="location">Location</label>
+            <input
+              type="text"
+              id="location"
+              placeholder="Enter your location"
+            />
+          </form>
+          <label for="payment-method">Payment Method:</label>
+          <select id="payment-method">
+            <option value="cod">Cash on Delivery</option>
+            <option value="card">Card</option>
+            <option value="paypal">PayPal</option>
+          </select>
+          <div id="paypal-button-container" style="display: none"></div>
+          <button id="checkout-button" class="btn">Checkout</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PayPal Embedded Browser Modal -->
+    <div id="paypal-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="close-paypal">&times;</span>
+        <h2>PayPal Payment</h2>
+        <p>This is a placeholder for PayPal payment processing.</p>
+        <iframe
+          src="https://www.paypal.com"
+          style="width: 100%; height: 400px; border: none"
+        ></iframe>
+        <button id="confirm-paypal" class="btn">Confirm Payment</button>
+      </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script src="{% static 'shop/scripts.js' %}"></script>
+  </body>
+</html>
