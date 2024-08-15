@@ -467,6 +467,67 @@ body {
   color: #2c3e50;
   margin-bottom: 10px;
 }
+#login-header {
+  font-family: "Great Vibes", cursive;
+  font-size: 24px;
+}
+#register-header {
+  font-family: "Great Vibes", cursive;
+  font-size: 24px;
+}
+#content-login {
+  background-color: #34495e;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 400px; /* Reduced from 600px to 400px for a more compact design */
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  color: #ecf0f1;
+  text-align: left;
+}
+
+#content-register {
+  background-color: #34495e;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 400px; /* Reduced from 600px to 400px for a more compact design */
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  color: #ecf0f1;
+  text-align: left;
+}
+/* Ensure consistent input field sizes */
+.modal-content input[type="text"],
+.modal-content input[type="password"] {
+  width: 95%; /* Consistent width */
+  padding: 10px; /* Consistent padding */
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  background-color: #ecf0f1;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 1rem; /* Consistent font size */
+}
+
+#login-username,
+#login-password,
+#register-username,
+#register-password,
+#register-confirm-password {
+  width: 95%;
+  padding: 10px;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  background-color: #ecf0f1;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 1rem; /* Ensures that the font size is consistent across all input fields */
+}
+
 .floating-cart {
   position: fixed;
   bottom: 20px;

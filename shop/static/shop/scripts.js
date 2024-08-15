@@ -1,6 +1,47 @@
 // shop/static/shop/scripts.js
 
 document.addEventListener("DOMContentLoaded", function () {
+  // Modal functionality
+  const signInBtn = document.getElementById("sign-in-btn");
+  const loginModal = document.getElementById("login-modal");
+  const closeLogin = document.getElementById("close-login");
+  const registerModal = document.getElementById("register-modal");
+  const closeRegister = document.getElementById("close-register");
+  const showRegisterModal = document.getElementById("show-register-modal");
+  const showLoginModal = document.getElementById("show-login-modal");
+
+  signInBtn.addEventListener("click", function () {
+    loginModal.style.display = "block";
+  });
+
+  closeLogin.addEventListener("click", function () {
+    loginModal.style.display = "none";
+  });
+
+  closeRegister.addEventListener("click", function () {
+    registerModal.style.display = "none";
+  });
+
+  showRegisterModal.addEventListener("click", function () {
+    loginModal.style.display = "none";
+    registerModal.style.display = "block";
+  });
+
+  showLoginModal.addEventListener("click", function () {
+    registerModal.style.display = "none";
+    loginModal.style.display = "block";
+  });
+
+  // Ensure modals close when clicking outside of them
+  window.addEventListener("click", function (event) {
+    if (event.target == loginModal) {
+      loginModal.style.display = "none";
+    }
+    if (event.target == registerModal) {
+      registerModal.style.display = "none";
+    }
+  });
+
   const searchInput = document.getElementById("search-input");
   const searchButton = document.getElementById("search-button");
   const categoryCheckboxes = document.querySelectorAll(

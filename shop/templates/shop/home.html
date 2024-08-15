@@ -24,6 +24,9 @@
           <div class="navbar-brand">
             <a href="/">Online Jewelry Shop</a>
           </div>
+          <ul class="navbar-nav">
+            <li><a href="#" id="sign-in-btn">Sign In</a></li>
+          </ul>
         </div>
       </nav>
     </header>
@@ -86,6 +89,70 @@
         </div>
       </section>
     </main>
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+      <div id="content-login" class="modal-content">
+        <span class="close" id="close-login">&times;</span>
+        <h2 id="login-header">Login</h2>
+        <form id="login-form">
+          <label for="login-username">Username</label>
+          <input
+            type="text"
+            id="login-username"
+            placeholder="Enter username"
+            required
+          />
+          <label for="login-password">Password</label>
+          <input
+            type="password"
+            id="login-password"
+            placeholder="Enter password"
+            required
+          />
+          <button type="submit" class="btn">Login</button>
+        </form>
+        <p>
+          Don't have an account?
+          <a href="#" id="show-register-modal">Register</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div id="register-modal" class="modal">
+      <div id="content-register" class="modal-content">
+        <span class="close" id="close-register">&times;</span>
+        <h2 id="register-header">Register</h2>
+        <form id="register-form">
+          <label for="register-username">Username</label>
+          <input
+            type="text"
+            id="register-username"
+            placeholder="Enter username"
+            required
+          />
+          <label for="register-password">Password</label>
+          <input
+            type="password"
+            id="register-password"
+            placeholder="Enter password"
+            required
+          />
+          <label for="register-confirm-password">Confirm Password</label>
+          <input
+            type="password"
+            id="register-confirm-password"
+            placeholder="Confirm password"
+            required
+          />
+          <button type="submit" class="btn">Register</button>
+        </form>
+        <p>
+          Already have an account? <a href="#" id="show-login-modal">Login</a>
+        </p>
+      </div>
+    </div>
+
     <script src="{% static 'shop/scripts.js' %}"></script>
   </body>
 </html>
