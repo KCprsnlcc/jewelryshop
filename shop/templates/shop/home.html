@@ -67,13 +67,13 @@
           {% for product in products %}
           <div
             class="product"
-            data-category="{{ product.category }}"
+            data-category="{{ product.category.name }}"
             data-name="{{ product.name }}"
           >
             <a href="{% url 'product_detail' product.id %}">
               <img src="{% static product.image %}" alt="{{ product.name }}" />
               <h3>{{ product.name }}</h3>
-              <p>{{ product.description|truncatewords:10 }}</p>
+              <p>{{ product.short_description }}</p>
               <p class="price">PHP {{ product.price|floatformat:2 }}</p>
             </a>
           </div>
@@ -82,7 +82,7 @@
         <!-- Floating Shopping Cart Button -->
         <div id="floating-cart-button" class="floating-cart">
           <i class="bx bx-shopping-bag"></i>
-          <span id="cart-count">0</span>
+          <span id="cart-count">{{ cart_total_quantity }}</span>
         </div>
       </section>
     </main>

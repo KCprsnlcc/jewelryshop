@@ -102,11 +102,21 @@ document.addEventListener("DOMContentLoaded", function () {
     cartTotalElement.textContent = total.toFixed(2);
   }
 
-  function updateCartCount() {
-    cartCountElement.textContent = cart.reduce(
-      (sum, item) => sum + item.quantity,
-      0
-    );
+  function updateCartCount(newCount) {
+    cartCountElement.textContent = newCount;
+  }
+
+  if (addToCartButton) {
+    addToCartButton.addEventListener("click", function () {
+      const productId = addToCartButton.dataset.productId;
+      fetch(`/add-to-cart/${productId}/`, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          updateCartCount(data.cart_total_quantity);
+        });
+    });
   }
 
   function renderCartItems() {

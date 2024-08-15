@@ -1,78 +1,75 @@
 # shop/views.py
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Product, Cart, CartItem
+from django.db.models import Sum
+from django.http import JsonResponse
+
+def get_cart(request):
+    session_id = request.session.session_key
+    if not session_id:
+        request.session.create()
+        session_id = request.session.session_key
+    
+    cart, created = Cart.objects.get_or_create(session_id=session_id)
+    return cart
 
 def home(request):
-    products = [
-        {
-            'id': 1,
-            'name': 'Alicia Gold Necklace',
-            'description': 'A pearl on a golden chain.',
-            'price': 1899,
-            'image': 'shop/images/Necklace1.png',
-            'category': 'Necklace'
-        },
-        {
-            'id': 2,
-            'name': 'Macy Gold Ring',
-            'description': 'Uncomplicated, matchless, open-front design.',
-            'price': 1999,
-            'image': 'shop/images/Ring1.png',
-            'category': 'Ring'
-        },
-        {
-            'id': 3,
-            'name': 'Kyla Gold Necklace',
-            'description': 'Dainty chain with minimalist pendant.',
-            'price': 3899,
-            'image': 'shop/images/Necklace2.png',
-            'category': 'Necklace'
-        },
-        {
-            'id': 4,
-            'name': 'Andie Gold Ring',
-            'description': 'Heartfelt glamor radiates love.',
-            'price': 3500,
-            'image': 'shop/images/Ring2.png',
-            'category': 'Ring'
-        }
-    ]
-    return render(request, 'shop/home.html', {'products': products})
+    products = Product.objects.all()
+    cart = get_cart(request)
+    cart_items = CartItem.objects.filter(cart=cart)
+    cart_total_quantity = cart_items.aggregate(Sum('quantity'))['quantity__sum'] or 0
+    return render(request, 'shop/home.html', {
+        'products': products,
+        'cart_total_quantity': cart_total_quantity
+    })
 
 def product_detail(request, product_id):
-    products = [
-        {
-            'id': 1,
-            'name': 'Alicia Gold Necklace',
-            'description': 'Pearls and gold are always a classic combination. The Alicia Necklace boasts a single pearl and a delicate golden chain, easily worn with daytime attire and evening ensembles alike. You’ll definitely have this piece on a heavy rotation.',
-            'price': 1899,
-            'image': 'shop/images/Necklace1.png',
-            'category': 'Necklace'
-        },
-        {
-            'id': 2,
-            'name': 'Macy Gold Ring',
-            'description': 'Unprecedented yet uncomplicated, the matchless Macy Ring balances out simplicity and standing out. Even better, it asks you to forget worrying about sizing. It’s open-front design makes for a great fit whether you buy it for yourself or as a gift.',
-            'price': 1500,
-            'image': 'shop/images/Ring1.png',
-            'category': 'Ring'
-        },
-        {
-            'id': 3,
-            'name': 'Kyla Gold Necklace',
-            'description': 'Pre-layering a dainty beaded chain and a minimalist ring pendant, this illusion necklace understands that less is more. With the Kyla Gold Necklace, you will spend less time deciding what to wear and more time enjoying how elegant you look. ',
-            'price': 3899,
-            'image': 'shop/images/Necklace2.png',
-            'category': 'Necklace'
-        },
-        {
-            'id': 4,
-            'name': 'Andie Gold Ring',
-            'description': 'Now here’s some heartfelt glamor. Whether it serves as a reminder of self-love or a symbol of someone’s affection, the Andie Ring is all set to radiate love.',
-            'price': 3500,
-            'image': 'shop/images/Ring2.png',
-            'category': 'Ring'
-        }
-    ]
-    product = next((item for item in products if item["id"] == product_id), None)
-    return render(request, 'shop/product_detail.html', {'product': product})
+    product = get_object_or_404(Product, id=product_id)
+    cart = get_cart(request)
+    cart_items = CartItem.objects.filter(cart=cart)
+    cart_total_quantity = cart_items.aggregate(Sum('quantity'))['quantity__sum'] or 0
+    return render(request, 'shop/product_detail.html', {
+        'product': product,
+        'cart_total_quantity': cart_total_quantity
+    })
+
+def add_to_cart(request, product_id):
+    cart = get_cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+    
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+
+    cart_items = CartItem.objects.filter(cart=cart)
+    cart_total_quantity = cart_items.aggregate(Sum('quantity'))['quantity__sum'] or 0
+
+    return JsonResponse({'cart_total_quantity': cart_total_quantity})
+
+def update_cart_quantity(request):
+    cart = get_cart(request)
+    product_id = request.POST.get('product_id')
+    quantity = int(request.POST.get('quantity'))
+    
+    product = get_object_or_404(Product, id=product_id)
+    cart_item = CartItem.objects.get(cart=cart, product=product)
+    cart_item.quantity = quantity
+    cart_item.save()
+
+    cart_items = CartItem.objects.filter(cart=cart)
+    cart_total_quantity = cart_items.aggregate(Sum('quantity'))['quantity__sum'] or 0
+
+    return JsonResponse({'cart_total_quantity': cart_total_quantity})
+
+def remove_from_cart(request, product_id):
+    cart = get_cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    cart_item = CartItem.objects.get(cart=cart, product=product)
+    cart_item.delete()
+
+    cart_items = CartItem.objects.filter(cart=cart)
+    cart_total_quantity = cart_items.aggregate(Sum('quantity'))['quantity__sum'] or 0
+
+    return JsonResponse({'cart_total_quantity': cart_total_quantity})
