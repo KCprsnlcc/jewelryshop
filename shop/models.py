@@ -1,5 +1,5 @@
 # shop/models.py
-
+from django.contrib.auth.models import User
 from django.db import models
 
 class Category(models.Model):
@@ -21,6 +21,7 @@ class Product(models.Model):
         return self.name
 
 class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     session_id = models.CharField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

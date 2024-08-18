@@ -52,6 +52,7 @@
     </div>
 
     <!-- Floating Shopping Cart Button -->
+    {% if user.is_authenticated %}
     <div id="floating-cart-button" class="floating-cart">
       <i class="bx bx-shopping-bag"></i>
       <span id="cart-count">{{ cart_total_quantity }}</span>

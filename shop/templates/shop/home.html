@@ -83,10 +83,12 @@
           {% endfor %}
         </div>
         <!-- Floating Shopping Cart Button -->
+        {% if user.is_authenticated %}
         <div id="floating-cart-button" class="floating-cart">
           <i class="bx bx-shopping-bag"></i>
           <span id="cart-count">{{ cart_total_quantity }}</span>
         </div>
+        {% endif %}
       </section>
     </main>
     <!-- Login Modal -->
@@ -95,20 +97,25 @@
         <span class="close" id="close-login">&times;</span>
         <h2 id="login-header">Login</h2>
         <form id="login-form">
+          {% csrf_token %}
           <label for="login-username">Username</label>
           <input
             type="text"
             id="login-username"
+            name="username"
             placeholder="Enter username"
             required
           />
+
           <label for="login-password">Password</label>
           <input
             type="password"
             id="login-password"
+            name="password"
             placeholder="Enter password"
             required
           />
+
           <button type="submit" class="btn">Login</button>
         </form>
         <p>
@@ -124,33 +131,42 @@
         <span class="close" id="close-register">&times;</span>
         <h2 id="register-header">Register</h2>
         <form id="register-form">
+          {% csrf_token %}
           <label for="register-username">Username</label>
           <input
             type="text"
             id="register-username"
+            name="username"
             placeholder="Enter username"
             required
           />
+
           <label for="register-password">Password</label>
           <input
             type="password"
             id="register-password"
+            name="password"
             placeholder="Enter password"
             required
           />
+
           <label for="register-confirm-password">Confirm Password</label>
           <input
             type="password"
             id="register-confirm-password"
+            name="confirm_password"
             placeholder="Confirm password"
             required
           />
+
           <button type="submit" class="btn">Register</button>
         </form>
         <p>
           Already have an account? <a href="#" id="show-login-modal">Login</a>
         </p>
       </div>
+      <!-- Notification dialog placeholder -->
+      <div id="notification" class="notification"></div>
     </div>
 
     <script src="{% static 'shop/scripts.js' %}"></script>

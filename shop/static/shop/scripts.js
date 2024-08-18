@@ -1,47 +1,6 @@
 // shop/static/shop/scripts.js
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Modal functionality
-  const signInBtn = document.getElementById("sign-in-btn");
-  const loginModal = document.getElementById("login-modal");
-  const closeLogin = document.getElementById("close-login");
-  const registerModal = document.getElementById("register-modal");
-  const closeRegister = document.getElementById("close-register");
-  const showRegisterModal = document.getElementById("show-register-modal");
-  const showLoginModal = document.getElementById("show-login-modal");
-
-  signInBtn.addEventListener("click", function () {
-    loginModal.style.display = "block";
-  });
-
-  closeLogin.addEventListener("click", function () {
-    loginModal.style.display = "none";
-  });
-
-  closeRegister.addEventListener("click", function () {
-    registerModal.style.display = "none";
-  });
-
-  showRegisterModal.addEventListener("click", function () {
-    loginModal.style.display = "none";
-    registerModal.style.display = "block";
-  });
-
-  showLoginModal.addEventListener("click", function () {
-    registerModal.style.display = "none";
-    loginModal.style.display = "block";
-  });
-
-  // Ensure modals close when clicking outside of them
-  window.addEventListener("click", function (event) {
-    if (event.target == loginModal) {
-      loginModal.style.display = "none";
-    }
-    if (event.target == registerModal) {
-      registerModal.style.display = "none";
-    }
-  });
-
   const searchInput = document.getElementById("search-input");
   const searchButton = document.getElementById("search-button");
   const categoryCheckboxes = document.querySelectorAll(
@@ -96,10 +55,166 @@ document.addEventListener("DOMContentLoaded", function () {
   categoryCheckboxes.forEach((checkbox) => {
     checkbox.addEventListener("change", filterProducts);
   });
-});
 
-document.addEventListener("DOMContentLoaded", function () {
+  const signInBtn = document.getElementById("sign-in-btn");
+  const loginModal = document.getElementById("login-modal");
+  const closeLogin = document.getElementById("close-login");
+  const registerModal = document.getElementById("register-modal");
+  const closeRegister = document.getElementById("close-register");
+  const showRegisterModal = document.getElementById("show-register-modal");
+  const showLoginModal = document.getElementById("show-login-modal");
+  const loginForm = document.getElementById("login-form");
+  const registerForm = document.getElementById("register-form");
   const addToCartButton = document.getElementById("add-to-cart-button");
+  const cartTotalQuantity = document.getElementById("cart-count");
+  const floatingCartButton = document.getElementById("floating-cart-button");
+  const notification = document.getElementById("notification");
+
+  signInBtn.addEventListener("click", function () {
+    loginModal.style.display = "block";
+  });
+
+  closeLogin.addEventListener("click", function () {
+    loginModal.style.display = "none";
+  });
+
+  closeRegister.addEventListener("click", function () {
+    registerModal.style.display = "none";
+  });
+
+  showRegisterModal.addEventListener("click", function () {
+    loginModal.style.display = "none";
+    registerModal.style.display = "block";
+  });
+
+  showLoginModal.addEventListener("click", function () {
+    registerModal.style.display = "none";
+    loginModal.style.display = "block";
+  });
+
+  loginForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    // Get the CSRF token from the cookie
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    const csrftoken = getCookie("csrftoken");
+
+    // Use the CSRF token in your AJAX request headers
+    fetch("/login/", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrftoken,
+        "Content-Type": "application/x-www-form-urlencoded", // Adjusted for form data
+      },
+      body: new URLSearchParams({
+        username: document.getElementById("login-username").value,
+        password: document.getElementById("login-password").value,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          location.reload(); // Reload the page on successful login
+        } else {
+          alert(data.error); // Display error message
+        }
+      });
+  });
+
+  registerForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    // Get the CSRF token from the cookie
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    const csrftoken = getCookie("csrftoken");
+
+    // Use the CSRF token in your AJAX request headers
+    fetch("/register/", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrftoken,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: document.getElementById("register-username").value,
+        password: document.getElementById("register-password").value,
+        confirm_password: document.getElementById("register-confirm-password")
+          .value,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          showNotification(
+            "Registration successful. Please log in.",
+            "success"
+          );
+          document.getElementById("register-modal").style.display = "none";
+          document.getElementById("login-modal").style.display = "block";
+        } else {
+          showNotification(data.error, "error");
+        }
+      });
+  });
+
+  function showNotification(message, type = "success") {
+    const notification = document.getElementById("notification");
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    notification.style.display = "block";
+    setTimeout(() => {
+      notification.style.display = "none";
+    }, 3000);
+  }
+
+  // Ensure modals close when clicking outside of them
+  window.addEventListener("click", function (event) {
+    if (event.target == loginModal) {
+      loginModal.style.display = "none";
+    }
+    if (event.target == registerModal) {
+      registerModal.style.display = "none";
+    }
+  });
+
+  // Ensure modals close when clicking outside of them
+  window.addEventListener("click", function (event) {
+    if (event.target == loginModal) {
+      loginModal.style.display = "none";
+    }
+    if (event.target == registerModal) {
+      registerModal.style.display = "none";
+    }
+  });
+
   const addToCartModal = document.getElementById("add-to-cart-modal");
   const closeAddToCart = document.getElementById("close-add-to-cart");
   const confirmAddToCart = document.getElementById("confirm-add-to-cart");
@@ -110,9 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const applyVoucherButton = document.getElementById("apply-voucher");
   const discountMessage = document.getElementById("discount-message");
   const checkoutButton = document.getElementById("checkout-button");
-  const notification = document.getElementById("notification");
   const cartCountElement = document.getElementById("cart-count");
-  const floatingCartButton = document.getElementById("floating-cart-button");
   const paypalModal = document.getElementById("paypal-modal");
   const closePayPal = document.getElementById("close-paypal");
   const confirmPayPal = document.getElementById("confirm-paypal");
@@ -147,15 +260,27 @@ document.addEventListener("DOMContentLoaded", function () {
     cartCountElement.textContent = newCount;
   }
 
+  // Handle adding to cart
   if (addToCartButton) {
     addToCartButton.addEventListener("click", function () {
-      const productId = addToCartButton.dataset.productId;
-      fetch(`/add-to-cart/${productId}/`, {
+      fetch(`/add-to-cart/${addToCartButton.dataset.productId}/`, {
         method: "GET",
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status === 403) {
+            showNotification(
+              "You must be logged in to add items to the cart.",
+              "error"
+            );
+            loginModal.style.display = "block";
+          } else {
+            return response.json();
+          }
+        })
         .then((data) => {
-          updateCartCount(data.cart_total_quantity);
+          if (data) {
+            cartTotalQuantity.textContent = data.cart_total_quantity;
+          }
         });
     });
   }
@@ -197,40 +322,50 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCartCount();
   }
 
-  addToCartButton.addEventListener("click", function () {
-    openModal(addToCartModal);
-  });
+  if (addToCartButton) {
+    addToCartButton.addEventListener("click", function () {
+      openModal(addToCartModal);
+    });
 
-  closeAddToCart.addEventListener("click", function () {
-    closeModal(addToCartModal);
-  });
+    closeAddToCart.addEventListener("click", function () {
+      closeModal(addToCartModal);
+    });
 
-  confirmAddToCart.addEventListener("click", function () {
-    const productName =
-      document.querySelector(".product-detail h3").textContent;
-    const productPrice = parseFloat(
-      document
-        .querySelector(".product-detail .price")
-        .textContent.replace("PHP ", "")
-    );
-    const quantity = parseInt(document.getElementById("cart-quantity").value);
-    const existingProductIndex = cart.findIndex(
-      (item) => item.name === productName
-    );
+    confirmAddToCart.addEventListener("click", function () {
+      const productName =
+        document.querySelector(".product-detail h3").textContent;
+      const productPrice = parseFloat(
+        document
+          .querySelector(".product-detail .price")
+          .textContent.replace("PHP ", "")
+      );
+      const quantity = parseInt(document.getElementById("cart-quantity").value);
+      const existingProductIndex = cart.findIndex(
+        (item) => item.name === productName
+      );
 
-    if (existingProductIndex > -1) {
-      cart[existingProductIndex].quantity += quantity;
-    } else {
-      cart.push({ name: productName, price: productPrice, quantity: quantity });
-    }
+      if (existingProductIndex > -1) {
+        cart[existingProductIndex].quantity += quantity;
+      } else {
+        cart.push({
+          name: productName,
+          price: productPrice,
+          quantity: quantity,
+        });
+      }
 
-    closeModal(addToCartModal);
-    renderCartItems();
-    showNotification("Item added to cart!", "success");
-  });
+      closeModal(addToCartModal);
+      renderCartItems();
+      showNotification("Item added to cart!", "success");
+    });
+  }
 
   floatingCartButton.addEventListener("click", function () {
-    openModal(cartModal);
+    if (cartTotalQuantity.textContent === "0") {
+      loginModal.style.display = "block";
+    } else {
+      openModal(cartModal);
+    }
   });
 
   closeCart.addEventListener("click", function () {
